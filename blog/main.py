@@ -1,24 +1,16 @@
-from typing import List
-
 from fastapi import FastAPI, Depends, Response, HTTPException
 from starlette import status
 
 from . import schemas, models
 from .hashing import Hash
-from .database import engine, SessionLocal
+from .database import engine, get_db
 from sqlalchemy.orm import Session
+from .routers import blog
 
 app = FastAPI()
+app.include_router(blog.router)
 
 models.Base.metadata.create_all(bind=engine)
-
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 @app.post('/blog', status_code=status.HTTP_201_CREATED, tags=['blogs'])
@@ -28,12 +20,6 @@ def create(request: schemas.Blog, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_blog)
     return new_blog
-
-
-@app.get('/blog', response_model=List[schemas.ShowBlog], tags=['blogs'])
-def all(db: Session = Depends(get_db)):
-    blogs = db.query(models.Blog).all()
-    return blogs
 
 
 @app.put('/blog/{id}', status_code=status.HTTP_202_ACCEPTED, tags=['blogs'])
