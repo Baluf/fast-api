@@ -4,7 +4,7 @@ from .. import schemas, database, models
 from sqlalchemy.orm import Session
 from ..hashing import Hash
 
-router = APIRouter(prefix='/user', tags=['users'])
+router = APIRouter(prefix='/user', tags=['Users'])
 
 
 @router.post('/', response_model=schemas.ShowUser)
@@ -22,4 +22,5 @@ def get_user(id, db: Session = Depends(database.get_db)):
 
     if not user:
         raise HTTPException(status_code=404, detail=f"user with id {id} not found")
+
     return user

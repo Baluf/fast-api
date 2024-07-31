@@ -6,7 +6,7 @@ from starlette import status
 
 from ..repository import blog
 
-router = APIRouter(prefix='/blog', tags=['blogs'])
+router = APIRouter(prefix='/blog', tags=['Blogs'])
 
 
 @router.get('/', response_model=List[schemas.ShowBlog])
