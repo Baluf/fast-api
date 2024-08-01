@@ -4,7 +4,9 @@ from starlette import status
 
 from blog import schemas, database, models
 
+
 from ..hashing import Hash
+from ..jwt_token import create_access_token
 
 router = APIRouter(prefix='/login', tags=['Authentication'])
 
@@ -19,4 +21,7 @@ def login(request: schemas.Login, db: Session = Depends(database.get_db)):
     if not Hash.verify(user.password, request.password):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'incorrect password')
 
-    return user
+    access_token = create_access_token(
+        data={"sub": user.email})
+
+    return schemas.Token(access_token=access_token, token_type="bearer")
