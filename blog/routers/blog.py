@@ -1,5 +1,7 @@
-from fastapi import APIRouter, Depends, Response, HTTPException
-from .. import schemas, database, models
+from fastapi import APIRouter, Depends
+
+from . import outh2
+from .. import schemas, database
 from typing import List
 from sqlalchemy.orm import Session
 from starlette import status
@@ -10,7 +12,7 @@ router = APIRouter(prefix='/blog', tags=['Blogs'])
 
 
 @router.get('/', response_model=List[schemas.ShowBlog])
-def all(db: Session = Depends(database.get_db)):
+def all(db: Session = Depends(database.get_db), current_user: schemas.User = Depends(outh2.get_current_user)):
     return blog.get_all(db)
 
 
